@@ -5,22 +5,18 @@ import { Label } from '@/components/ui/label'
 import Image from 'next/image'
 import React, { useActionState, useState } from 'react'
 import {  useFormStatus } from 'react-dom'
-import { addProduct } from '../../_actions/products'
+import { addProduct, editProduct } from '../../_actions/products'
 import { formatCurrency } from '@/lib/formatters'
 import { Textarea } from '@/components/ui/textarea'
+import { Product } from '@/generated/prisma'
 
-export default function ProductForm() {
+export default function ProductForm({product}: {product: Product | null}) {
   const [error, action] = useActionState(
-     addProduct,
+     product ? editProduct.bind(null, product.id): addProduct,
     {}
   )
-  // const [priceInCents, setPriceInCents] = useState<number | undefined>(
-  //   // product?.priceInCents
-  // )
-  const product = {}
   const [priceInCents, setPriceInCents] = useState<number | undefined>(
-    // product?.priceInCents
-    20
+    product?.priceInCents || 20
   )
   return (
     <form action={action} className="space-y-8 max-w-96 mx-auto">
@@ -75,14 +71,14 @@ export default function ProductForm() {
       <div className="space-y-2">
         <Label htmlFor="image">Image</Label>
         <Input type="file" id="image" name="image" required={product == null} />
-        {/* {product != null && (
+        {product != null && (
           <Image
             src={product.imagePath}
             height="400"
             width="400"
             alt="Product Image"
           />
-        )} */}
+        )}
         {error.image && <div className="text-destructive">{error.image}</div>}
       </div>
       <SubmitButton />
